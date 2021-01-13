@@ -1,0 +1,10 @@
+[package]
+org = "nuwant"
+name = "exercise2"
+version = "0.1.0"
+
+[build-options]
+observabilityIncluded = true
+
+[[platform.java11.dependency]]
+path = "lib/mysql-connector-java-8.0.18.jar"
