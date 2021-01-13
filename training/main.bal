@@ -1,9 +1,11 @@
 import ballerina/io;
 import ballerina/http;
 import ballerina/log;
+import ballerina/jdbc;
 
-// Variable to handle customer data
-map<json> data = {};
+// DB client
+jdbc:Client dbClient =check new("jdbc:mysql://localhost:3306/training","root","");
+// jdbc:Client dbClient = check new ("jdbc:h2:file:./target/sample1");
 
 // Customer Object
 type Customer record {|
@@ -16,43 +18,55 @@ type Customer record {|
 
 service http:Service /customerAPI on new http:Listener(9090) {
 
-    // GET resource
-    resource function get customer/[int _id] (http:Caller caller, http:Request request) {
+    // GET resource - GET customer by ID
+    resource function get customer/[int _id] (http:Caller caller, http:Request request) returns @untainted error?{
 
         io:println("[GET] _cusomerID : ", _id);
 
-        //Response declaration
-        http:Response res=new;
-        res.setJsonPayload(_id.toString());
-        
-        if(_id > 0){
-            json? customer = data[_id.toString()];
-            if (customer is ()){
-                res.statusCode=404;
-                res.setJsonPayload("[GET] Customer Not found !! ");
-                log:printError("[GET] Customer Not found !!");
-            } else {
-               res.statusCode=200;
-               res.setJsonPayload(<@untainted><json>customer);
+        // Query | DB to stream
+        stream<record{}, error> resultStream = dbClient->query(`SELECT * FROM Customer WHERE Id = ${_id.toString()}`);
+
+        //Map resultset to type Customer
+        record {|record{} value;|}? entry = check resultStream.next();
+
+        if (entry is record{|record{} value;|}) {
+            io:println(entry.value);
+            json|error r = entry.value.cloneWithType(json);
+            if (r is error) {
+                check caller->notFound();
+            }else{
+                check caller->ok(<@untainted>r);
             }
-        } else {
-            res.statusCode=400;
-            res.setJsonPayload("[GET] Invalid !! CustomerID should be a number more than 0");
-            log:printError("[GET] CustomerID should be a number more than 0");
+        }else{
+            check caller->notFound();
         }
+    }
 
-        //Execute response
-        var result = caller->respond(res);
+    // GET resource - GET all customers
+    resource function get customer/all (http:Caller caller, http:Request request) returns @untainted error?{
 
-        if (result is error) {
-           log:printError("[GET] Error in responding", err = result);
-        }
-        
+        io:println("[GET] _getAllCustomers");
+
+        // Query | DB to stream
+        stream<record{}, error> resultStream = dbClient->query(`SELECT * FROM Customer`);
+
+        json[] data = [];
+
+        error? e = resultStream.forEach(function(record {} result) {
+            var cusObj = result.cloneWithType(json);
+            if (cusObj is error){
+                log:printError("[GET] Error in retreiving customer object");
+            } else {
+                data.push(cusObj);
+            }
+        }); 
+
+        check caller->ok(<@untainted> data);
+
     }
 
     // POST resource
-    resource function post customer (http:Caller caller, http:Request request) {
-        
+     resource function post customer (http:Caller caller, http:Request request) returns @untainted error?{
         json|error payload = request.getJsonPayload();
 
         http:Response res = new;
@@ -65,17 +79,16 @@ service http:Service /customerAPI on new http:Listener(9090) {
             }
             else {
                 // Map values from payload to type Customer
-                var cusId = payload._id;
+                // var cusId = payload._id;
                 var cusName = payload.name;
                 var cusEmail = payload.email;
                 var cusCountry = payload.country;
 
-                Customer cus = {_id:<int> cusId, name: <string>cusName, email: <string> cusEmail, country: <string> cusCountry};
+                 _ = check dbClient->execute(`INSERT INTO Customer(Name, Country, Email) VALUES(${<@untainted> <string>cusName},${<@untainted> <string>cusCountry},${<@untainted> <string>cusEmail})`);
 
-                data[cusId.toString()] = <@untainted> cus;
                 res.statusCode=201;
-                res.setJsonPayload({status:"Successfully Saved", customerId: <@untainted> cusId.toString(), customerName: <@untainted> cusName.toString()});
-                io:println("[POST] Successfully Saved ___data____ : ", <@untainted> cus);
+                res.setJsonPayload({status:"Successfully Saved", payload: <@untainted> payload});
+                io:println("[POST] Successfully Saved ___data____ : ", <@untainted> payload);
             }
 
         } else {
@@ -89,48 +102,9 @@ service http:Service /customerAPI on new http:Listener(9090) {
         if (result is error) {
            log:printError("[POST] Error in responding", err = result);
         }
-    }
+     }
 
     // PUT resource
-    resource function put customer/[int _id] (http:Caller caller, http:Request request){
-
-    json|error payload = request.getJsonPayload();
-
-    http:Response res = new;
-
-      if (payload is json) {
-            if(payload is ()){
-                res.statusCode=400;
-                res.setJsonPayload("[PUT] Empty JSON !!");
-                log:printError("[PUT] Empty JSON !!");
-            }
-            else {
-                // Map values from payload to type Customer
-                var cusId = payload._id;
-                var cusName = payload.name;
-                var cusEmail = payload.email;
-                var cusCountry = payload.country;
-
-                Customer cus = {_id:<int> cusId, name: <string>cusName, email: <string> cusEmail, country: <string> cusCountry};
-
-                data[_id.toString()] = <@untainted> cus;
-         
-                res.statusCode=201;
-                res.setJsonPayload({status:"Successfully Modified", customerId: <@untainted> cusId.toString(), customerName: <@untainted> cusName.toString()});
-                io:println("[PUT] Successfully Modified");
-            }
-
-        } else {
-            res.statusCode=400;
-            res.setJsonPayload("[POST] Invalid JSON");
-            log:printError("[POST] Invalid JSON");
-        }
-
-        var result = caller->respond(res);
-
-        if (result is error) {
-           log:printError("[POST] Error in responding", err = result);
-        }
-    }
+    resource function put customer/[int _id] (http:Caller caller, http:Request request){}
 
 }
