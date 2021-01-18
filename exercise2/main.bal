@@ -83,7 +83,6 @@ service http:Service /customerAPI on new http:Listener(9090) {
             }
             else {
                 // Map values from payload to type Customer
-                // var cusId = payload._id;
                 var cusName = payload.name;
                 var cusEmail = payload.email;
                 var cusCountry = payload.country;
@@ -122,7 +121,6 @@ service http:Service /customerAPI on new http:Listener(9090) {
             }
             else {
                 // Map values from payload to type Customer
-                // var cusId = payload._id;
                 var cusName = payload.name;
                 var cusEmail = payload.email;
                 var cusCountry = payload.country;

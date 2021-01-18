@@ -1,0 +1,1 @@
+{"nuwant/excercise4:0.1.0" : [{"function":{"name":"getCustomer","requiredParams":[{"customerId":"string"}],"returnType":"json"}},{"function":{"name":"addCustomer","requiredParams":[{"customer":"nuwant/excercise4:0.1.0:Customer"}],"returnType":"string"}}]}
