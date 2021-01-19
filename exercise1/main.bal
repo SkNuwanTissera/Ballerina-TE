@@ -14,7 +14,7 @@ type Customer record {|
 |};
 
 
-service http:Service /customerAPI on new http:Listener(9090) {
+service http:Service /customerAPI on new http:Listener(9091) {
 
     // GET resource
     resource function get customer/[int _id] (http:Caller caller, http:Request request) {

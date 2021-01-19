@@ -1,12 +1,12 @@
+import ballerina/http;
+import ballerina/test;
+import ballerina/log;
+
 #############################################################
 # Please start the server on Excercise 2 before building this.
 # (excercise2) > ballerina build
 # (excercise2) > ballerina run target/bin/excercise2.jar
 #############################################################
-
-import ballerina/http;
-import ballerina/test;
-import ballerina/log;
 
 http:Client httpClientEndpoint = new ("http://localhost:9090");
 

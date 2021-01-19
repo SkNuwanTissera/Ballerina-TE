@@ -35,7 +35,7 @@ http:Client clientEP = new("https://graph.facebook.com/", {
         }
 });
 
-service http:Service /fb on new http:Listener(9091) {
+service http:Service /fb on new http:Listener(9093) {
 
     // GET resource
     resource function get me (http:Caller caller, http:Request request) {

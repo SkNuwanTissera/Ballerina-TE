@@ -1,6 +1,6 @@
 [package]
 org = "nuwant"
-name = "excercise5"
+name = "exercise3"
 version = "0.1.0"
 
 [build-options]

@@ -1,0 +1,1 @@
+{"nuwant/exercise5:0.1.0" : [{"function":{"name":"getWeatherByCity","requiredParams":[{"city":"string"}],"returnType":"json"}}]}
