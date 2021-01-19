@@ -26,8 +26,10 @@ Build a connector to a webAPI (weather API)
 I used openweathermap.org API for this purpose.
 
 ### Run
-`ballerina build`
-`ballerina run target\bin\<jar_name>.jar`
+```
+ballerina build
+ballerina run target\bin\<jar_name>.jar
+```
 
 ### Version
 Ballerina Swan Lake Preview 8
