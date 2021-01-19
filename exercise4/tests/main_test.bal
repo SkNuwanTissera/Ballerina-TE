@@ -11,7 +11,7 @@ import ballerina/log;
 http:Client httpClientEndpoint = new ("http://localhost:9090");
 
 Customer customer1 ={
-    _id:9,
+    _id:18,
     name:"Nuwan Tissera",
     country:"SL",
     email:"sliit.sk95@gmail.com"
@@ -50,6 +50,41 @@ public function testGetCustomer(){
         else{
             log:print("Status Code : "+ res.statusCode.toString()+ " Message : Malformed payload recieved");
         }
+    }
+    else{
+        log:printError("Test Request Failed");
+        test:assertFail(res.toString());
+    }
+}
+
+@test:Config{
+    dependsOn:["testAddCustomer"]
+}
+public function testUpdateCustomer(){
+    
+    http:Request req = new;
+    json jsonRequest = {name:customer1.name, country:customer1.country, email:customer1?.email};
+    req.setJsonPayload(jsonRequest);
+    var res = httpClientEndpoint -> put("/customerAPI/customer/" + customer1?._id.toString(), req);
+    if(res is http:Response){
+        var jsonResponse = res.getJsonPayload();
+        log:print("Status Code : "+ res.statusCode.toString()+ " Message : "+ jsonResponse.toString());
+    }
+    else{
+        log:printError("Test Request Failed");
+        test:assertFail(res.toString());
+    }
+}
+
+@test:Config{
+    dependsOn:["testAddCustomer"]
+}
+public function testDeleteCustomer(){
+
+    var res = httpClientEndpoint -> delete("/customerAPI/customer/" + customer1?._id.toString());
+    if(res is http:Response){
+        var jsonResponse = res.getJsonPayload();
+        log:print("Status Code : "+ res.statusCode.toString()+ " Message : "+ jsonResponse.toString());
     }
     else{
         log:printError("Test Request Failed");

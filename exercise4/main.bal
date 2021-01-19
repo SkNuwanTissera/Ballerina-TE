@@ -61,4 +61,29 @@ public client class Client{
         }
     }
 
+    // PUT customer
+    remote function updateCustomer(Customer customer, string customerId) returns string|error?{
+        
+        var result = self.jdbcClient->execute(`UPDATE Customer SET name=${<@untainted> customer.name}, country=${<@untainted> customer.country}, email=${<@untainted> customer.email} WHERE Id = ${<@untainted>customerId}`);
+
+        if result is sql:ExecutionResult{
+            return "Customer "+<@untainted> customer.name+" is updated successfully!"; 
+        } else {
+            log:printError(result.toString());
+            return result.toString();
+        }
+    }
+
+    // DELETE customer
+    remote function deleteCustomer(string customerId) returns string|error? {
+
+        var result = self.jdbcClient->execute(`DELETE FROM Customer WHERE Id=${<@untainted> customerId}`);
+        if result is sql:ExecutionResult {
+            return "Customer ID"+<@untainted> customerId+" is deleted successfully!";
+        } else {
+            log:printError(result.toString());
+            return result.toString();
+        }
+    }
+
 }
