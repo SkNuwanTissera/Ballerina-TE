@@ -4,10 +4,10 @@ import ballerina/log;
 import ballerina/io;
 
 oauth2:OutboundOAuth2Provider oauth2Provider = new({
-    accessToken:"EAABxLNUCC0ABAEZCHbtMVey3YEZAGRsQFXgjd6nGZBx1M5AQS7n3kR5jOTJRhrq7ZCkCws4AS5rk0PYAZCPiZAhCH2reFdmKMaUR4mh8iv2DbA5OkflRe2aCOxZCIiaFNQw6lJaRozl1LzQL4H4bl4ASMBjyy02fQqEt0pfzcYOkqqnu1tdWpRy3H9Y2A24NDLhKhr1ioEIb7rEWQWNnWYRhtxs1ojdELFTVGivO5DU4E2dZBlsKswQd3S8bHPJ8pHIZD",
+    accessToken:"ACCESS_TOKEN_FROM_API",
     refreshConfig:{
-        clientId:"124437366180672",
-        clientSecret:"dd8a840f2f1e88b1ccb0a65a2de5a126",
+        clientId:"CLIENT_ID",
+        clientSecret:"CLIENT_SECRET",
         refreshToken:"",
         refreshUrl:"",
         clientConfig:{
