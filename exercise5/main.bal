@@ -1,9 +1,10 @@
 import ballerina/http;
 import ballerina/io;
 
-#######################
+######################################
 # Configuration record
-# #####################
+# + apiKey - API key from weather API
+# ####################################
 
 public type Config record {
     string apiKey;
