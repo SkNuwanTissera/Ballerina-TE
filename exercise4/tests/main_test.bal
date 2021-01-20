@@ -7,86 +7,81 @@ import ballerina/log;
 # (excercise2) > ballerina build
 # (excercise2) > ballerina run target/bin/excercise2.jar
 #############################################################
-
 http:Client httpClientEndpoint = new ("http://localhost:9090");
 
-Customer customer1 ={
-    _id:18,
-    name:"Nuwan Tissera",
-    country:"SL",
-    email:"sliit.sk95@gmail.com"
+Customer customer1 = {
+    _id: 18,
+    name: "Nuwan Tissera",
+    country: "SL",
+    email: "sliit.sk95@gmail.com"
 };
 
-@test:Config{}
-public function testAddCustomer(){
+@test:Config {}
+public function testAddCustomer() {
     http:Request req = new;
 
-    json jsonRequest = {name:customer1.name, country:customer1.country, email:customer1?.email};
+    json jsonRequest = {
+        name: customer1.name,
+        country: customer1.country,
+        email: customer1?.email
+    };
 
     req.setJsonPayload(jsonRequest);
-    var res = httpClientEndpoint -> post("/customerAPI/customer", req);
-    if(res is http:Response){
+    var res = httpClientEndpoint->post("/customerAPI/customer", req);
+    if (res is http:Response) {
         var jsonResponse = res.getJsonPayload();
-        log:print("Status Code : "+ res.statusCode.toString()+ " Message : "+ jsonResponse.toString());
-    }
-    else{
+        log:print("Status Code : " + res.statusCode.toString() + " Message : " + jsonResponse.toString());
+    } else {
         log:printError("Test Request Failed");
         test:assertFail(res.toString());
     }
 }
 
+@test:Config {dependsOn: ["testAddCustomer"]}
+public function testGetCustomer() {
+    var res = httpClientEndpoint->get("/customerAPI/customer/" + customer1?._id.toString());
 
-@test:Config{
-    dependsOn:["testAddCustomer"]
-}
-public function testGetCustomer(){
-    var res = httpClientEndpoint -> get("/customerAPI/customer/" + customer1?._id.toString());
-
-    if(res is http:Response){
+    if (res is http:Response) {
         var jsonResponse = res.getJsonPayload();
-        if(jsonResponse is json){
-            log:print("Status Code : "+ res.statusCode.toString()+ " Message : "+ jsonResponse.toString());
+        if (jsonResponse is json) {
+            log:print("Status Code : " + res.statusCode.toString() + " Message : " + jsonResponse.toString());
+        } else {
+            log:print("Status Code : " + res.statusCode.toString() + " Message : Malformed payload recieved");
         }
-        else{
-            log:print("Status Code : "+ res.statusCode.toString()+ " Message : Malformed payload recieved");
-        }
-    }
-    else{
+    } else {
         log:printError("Test Request Failed");
         test:assertFail(res.toString());
     }
 }
 
-@test:Config{
-    dependsOn:["testAddCustomer"]
-}
-public function testUpdateCustomer(){
-    
+@test:Config {dependsOn: ["testAddCustomer"]}
+public function testUpdateCustomer() {
+
     http:Request req = new;
-    json jsonRequest = {name:customer1.name, country:customer1.country, email:customer1?.email};
+    json jsonRequest = {
+        name: customer1.name,
+        country: customer1.country,
+        email: customer1?.email
+    };
     req.setJsonPayload(jsonRequest);
-    var res = httpClientEndpoint -> put("/customerAPI/customer/" + customer1?._id.toString(), req);
-    if(res is http:Response){
+    var res = httpClientEndpoint->put("/customerAPI/customer/" + customer1?._id.toString(), req);
+    if (res is http:Response) {
         var jsonResponse = res.getJsonPayload();
-        log:print("Status Code : "+ res.statusCode.toString()+ " Message : "+ jsonResponse.toString());
-    }
-    else{
+        log:print("Status Code : " + res.statusCode.toString() + " Message : " + jsonResponse.toString());
+    } else {
         log:printError("Test Request Failed");
         test:assertFail(res.toString());
     }
 }
 
-@test:Config{
-    dependsOn:["testAddCustomer"]
-}
-public function testDeleteCustomer(){
+@test:Config {dependsOn: ["testAddCustomer"]}
+public function testDeleteCustomer() {
 
-    var res = httpClientEndpoint -> delete("/customerAPI/customer/" + customer1?._id.toString());
-    if(res is http:Response){
+    var res = httpClientEndpoint->delete("/customerAPI/customer/" + customer1?._id.toString());
+    if (res is http:Response) {
         var jsonResponse = res.getJsonPayload();
-        log:print("Status Code : "+ res.statusCode.toString()+ " Message : "+ jsonResponse.toString());
-    }
-    else{
+        log:print("Status Code : " + res.statusCode.toString() + " Message : " + jsonResponse.toString());
+    } else {
         log:printError("Test Request Failed");
         test:assertFail(res.toString());
     }
